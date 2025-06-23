@@ -64,8 +64,8 @@ public class RegisterController {
 
 	@GetMapping("/file/{id}/{type}")
 	public ResponseEntity<byte[]> getFile(
-			@PathVariable Long id,
-			@PathVariable String type
+			@PathVariable("id") Long id,
+			@PathVariable("type") String type
 			) {
 		UserInfo user = userRepo.findById(id)
 				.orElseThrow(() -> new RuntimeException("User not found"));

@@ -31,12 +31,12 @@ public class vehicleController {
     }
 
     @GetMapping("/getUser/{id}")
-    public Optional<UserInfo> getUserById(@PathVariable Long id) {
+    public Optional<UserInfo> getUserById(@PathVariable("id") Long id) {
         return vehicleService.getUserById(id);
     }
 
     @PostMapping("/approve/{userId}")
-    public ResponseEntity<String> addVehicle(@PathVariable Long userId, @RequestBody VehicleRequest vehicleRequest) {
+    public ResponseEntity<String> addVehicle(@PathVariable("userId") Long userId, @RequestBody VehicleRequest vehicleRequest) {
         boolean added = vehicleService.saveVehicleToUser(userId, vehicleRequest);
         if (added) {
             return ResponseEntity.ok("Vehicle added successfully");
@@ -47,7 +47,7 @@ public class vehicleController {
     
     @PatchMapping("/update/{userId}")
     public ResponseEntity<String> updateOrAddVehicle(
-            @PathVariable Long userId,
+    		@PathVariable("userId") Long userId,
             @RequestBody VehicleRequest vehicleRequest) {
         try {
             boolean success = vehicleService.addOrUpdateVehicleToUser(userId, vehicleRequest);

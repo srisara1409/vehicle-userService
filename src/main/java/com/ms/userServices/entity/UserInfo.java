@@ -33,6 +33,8 @@ public class UserInfo {
 	private String dateOfBirth;
 	private String mobileNumber;
 	private String email;
+
+	
 	private String vehicleType;
 	private String licenseNumber;
 	private String licenseState;
