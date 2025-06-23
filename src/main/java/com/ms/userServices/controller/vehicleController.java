@@ -36,7 +36,7 @@ public class vehicleController {
     }
 
     @PostMapping("/approve/{userId}")
-    public ResponseEntity<String> addVehicle(@PathVariable Long userId, @RequestBody VehicleRequest vehicleRequest) {
+    public ResponseEntity<String> addVehicle(@PathVariable("userId") Long userId, @RequestBody VehicleRequest vehicleRequest) {
         boolean added = vehicleService.saveVehicleToUser(userId, vehicleRequest);
         if (added) {
             return ResponseEntity.ok("Vehicle added successfully");

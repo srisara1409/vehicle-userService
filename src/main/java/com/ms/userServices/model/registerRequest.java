@@ -15,6 +15,7 @@ public class registerRequest {
 	private String vehicleType;
 	private String licenseNumber;
 	private String licenseState;
+	private String signature; 
 	private String addressLine;
 	private String city;
 	private String postalCode;
@@ -29,6 +30,12 @@ public class registerRequest {
 	private String emergencyContactNumber;
 	private String status = "PENDING";
 	
+	public String getSignature() {
+		return signature;
+	}
+	public void setSignature(String signature) {
+		this.signature = signature;
+	}
 	public String getFinancialInstName() {
 		return financialInstName;
 	}

@@ -1,5 +1,7 @@
 package com.ms.userServices.controller;
 
+import java.util.Base64;
+
 import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +43,7 @@ public class RegisterController {
 			@RequestPart(value = "licensePhoto", required = false) MultipartFile licensePhoto,
 			@RequestPart(value = "passportCopy", required = false) MultipartFile passportCopy,
 			@RequestPart(value = "photoIdCopy", required = false) MultipartFile photoIdCopy
+			//@RequestPart(value = "signature", required = false) MultipartFile signature
 			) throws Exception {
 		UserInfo user = new UserInfo();
 		BeanUtils.copyProperties(data, user);
@@ -48,7 +51,9 @@ public class RegisterController {
 		user.setLicensePhoto(licensePhoto != null ? licensePhoto.getBytes() : null);
 		user.setPassportCopy(passportCopy != null ? passportCopy.getBytes() : null);
 		user.setPhotoIdCopy(photoIdCopy != null ? photoIdCopy.getBytes() : null);
-		
+		//user.setSignature(signature != null ? signature.getBytes() : null);
+		byte[] signatureBlob = extractSignatureBlob(data.getSignature());
+		user.setSignature(signatureBlob);
 		
 		byte[] pdf = registerService.generateBankDetailsPdf(
 		        user.getAccountName(), user.getBsbNumber(), user.getAccountNumber(),user.getFinancialInstName()
@@ -91,6 +96,10 @@ public class RegisterController {
 			fileData = user.getBankDetailsPdf();
 			filename = "bank_details.pdf";
 			break;
+		case "signature":
+			fileData = user.getSignature();
+			filename = "signature_image.pdf";
+			break;
 		default:
 			throw new IllegalArgumentException("Invalid file type: " + type);
 		}
@@ -106,5 +115,10 @@ public class RegisterController {
 				.body(fileData);
 	}
 
-
+	private byte[] extractSignatureBlob(String base64String) {
+	    if (base64String != null && base64String.startsWith("data:image")) {
+	        base64String = base64String.substring(base64String.indexOf(",") + 1);
+	    }
+	    return Base64.getDecoder().decode(base64String);
+	}
 }

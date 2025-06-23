@@ -52,6 +52,10 @@ public class UserInfo {
 	
 	@Lob
 	@JsonIgnore
+	private byte[] signature;
+	
+	@Lob
+	@JsonIgnore
 	private byte[] bankDetailsPdf;
 	
 	private String addressLine;
@@ -71,6 +75,13 @@ public class UserInfo {
 	@JsonManagedReference
 	private List<VehicleDetails> vehicles = new ArrayList<>();
 	
+	
+	public byte[] getSignature() {
+		return signature;
+	}
+	public void setSignature(byte[] signature) {
+		this.signature = signature;
+	}
 	public List<VehicleDetails> getVehicles() {
 		return vehicles;
 	}
