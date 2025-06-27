@@ -21,7 +21,7 @@ import org.w3c.dom.Document;
 
 import com.ms.userServices.entity.UserInfo;
 import com.ms.userServices.model.registerRequest;
-import com.ms.userServices.repository.UserRepository;
+import com.ms.userServices.repository.UserLoginRepository;
 import com.ms.userServices.repository.VehicleRepository;
 import com.ms.userServices.services.RegisterService;
 
@@ -31,7 +31,7 @@ import com.ms.userServices.services.RegisterService;
 public class RegisterController {
 
 	@Autowired
-	private UserRepository userRepo;
+	private UserLoginRepository userRepo;
 
 	@Autowired
 	private RegisterService registerService;

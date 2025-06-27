@@ -10,7 +10,8 @@ import org.springframework.stereotype.Service;
 import com.ms.userServices.entity.VehicleDetails;
 import com.ms.userServices.entity.UserInfo;
 import com.ms.userServices.model.VehicleRequest;
-import com.ms.userServices.repository.UserRepository;
+import com.ms.userServices.repository.AdminLoginRepository;
+import com.ms.userServices.repository.UserLoginRepository;
 import com.ms.userServices.repository.VehicleRepository;
 
 @Service
@@ -20,7 +21,7 @@ public class VehicleService {
     private VehicleRepository vehicleRepo;
 
     @Autowired
-    private UserRepository userRepo;
+    private UserLoginRepository userRepo;
 
     public List<UserInfo> getUserDetails() {
         return userRepo.findAll();
