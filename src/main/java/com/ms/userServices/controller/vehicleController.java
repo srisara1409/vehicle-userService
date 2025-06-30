@@ -37,7 +37,7 @@ public class vehicleController {
     }
 
     @GetMapping("/getUser/{id}")
-    public Optional<UserInfo> getUserById(@PathVariable Long id) {
+    public Optional<UserInfo> getUserById(@PathVariable("id") Long id) {
         return vehicleService.getUserById(id);
     }
 
@@ -53,7 +53,7 @@ public class vehicleController {
     
     @PatchMapping("/update/{userId}")
     public ResponseEntity<String> updateOrAddVehicle(
-            @PathVariable Long userId,
+    		@PathVariable("userId") Long userId,
             @RequestBody VehicleRequest vehicleRequest) {
         try {
             boolean success = vehicleService.addOrUpdateVehicleToUser(userId, vehicleRequest);
