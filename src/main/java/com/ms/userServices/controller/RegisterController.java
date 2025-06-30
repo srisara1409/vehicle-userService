@@ -1,33 +1,30 @@
 package com.ms.userServices.controller;
 
+import java.io.IOException;
 import java.util.Base64;
 
-import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.w3c.dom.Document;
 
 import com.ms.userServices.entity.UserInfo;
 import com.ms.userServices.model.registerRequest;
 import com.ms.userServices.repository.UserLoginRepository;
-import com.ms.userServices.repository.VehicleRepository;
 import com.ms.userServices.services.RegisterService;
 
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/register")
+@RequestMapping("/api/v1/register")
 public class RegisterController {
 
 	@Autowired
@@ -35,6 +32,39 @@ public class RegisterController {
 
 	@Autowired
 	private RegisterService registerService;
+	
+//	private final FileStorageService fileService;
+//
+//    public FileUpdateController(FileStorageService fileService) {
+//        this.fileService = fileService;
+//    }
+
+    @PostMapping("/updateFiles")
+    public ResponseEntity<String> updateFiles(
+    	@RequestPart("userId") Long userId,
+        @RequestPart(value = "licenseFile", required = false) MultipartFile licenseFile,
+        @RequestPart(value = "passportFile", required = false) MultipartFile passportFile,
+        @RequestPart(value = "photoIdCopy", required = false) MultipartFile photoIdFile,
+        @RequestPart(value = "bankFile", required = false) MultipartFile bankFile
+    ) {
+        try {
+            if (licenseFile != null && !licenseFile.isEmpty()) {
+            	registerService.saveFile(userId, licenseFile, "license");
+            }
+            if (passportFile != null && !passportFile.isEmpty()) {
+            	registerService.saveFile(userId, passportFile, "passport");
+            }
+            if (photoIdFile != null && !photoIdFile.isEmpty()) {
+            	registerService.saveFile(userId, photoIdFile, "photoIdCopy");
+            }
+            if (bankFile != null && !bankFile.isEmpty()) {
+            	registerService.saveFile(userId, bankFile, "bankpdf");
+            }
+            return ResponseEntity.ok("Files updated successfully.");
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update files.");
+        }
+    }
 
 
 	@PostMapping(consumes = {"multipart/form-data"})
@@ -56,8 +86,8 @@ public class RegisterController {
 		user.setSignature(signatureBlob);
 		
 		byte[] pdf = registerService.generateBankDetailsPdf(
-		        user.getAccountName(), user.getBsbNumber(), user.getAccountNumber(),user.getFinancialInstName()
-		    );
+		        user.getAccountName(), user.getBsbNumber(), user.getAccountNumber(),user.getFinancialInstName(), 
+		        user.getSignature());
 		user.setStatus("PENDING");
 		user.setBankDetailsPdf(pdf);
 		userRepo.save(user);
