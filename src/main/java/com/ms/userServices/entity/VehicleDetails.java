@@ -4,6 +4,7 @@ import org.apache.catalina.User;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -29,7 +30,11 @@ public class VehicleDetails {
 	private Integer bondWeeks;
 	private String bondStartDate;
 	private String bondEndDate;
+	
+	@Column(name = "vehicle_make")
 	private String make;
+	
+	@Column(name = "vehicle_year")
 	private Integer year;
 	private String Model;
 	private String registrationNumber;
