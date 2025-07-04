@@ -107,24 +107,23 @@ public class RegisterController {
 
 		byte[] fileData;
 		String filename;
-		String contentType = "application/octet-stream"; // default
 
 		switch (type.toLowerCase()) {
 		case "license":
 			fileData = user.getLicensePhoto();
-			filename = "license_photo.pdf";
+			filename = "license_photo";
 			break;
 		case "passport":
 			fileData = user.getPassportCopy();
-			filename = "passport_copy.pdf";
+			filename = "passport_copy";
 			break;
 		case "photoid":
 			fileData = user.getPhotoIdCopy();
-			filename = "photo_id.pdf";
+			filename = "photo_id";
 			break;
 		case "bankpdf":
 			fileData = user.getBankDetailsPdf();
-			filename = "bank_details.pdf";
+			filename = "bank_details";
 			break;
 		case "signature":
 			fileData = user.getSignature();
@@ -135,12 +134,23 @@ public class RegisterController {
 		}
 
 		// Detect content type if you want (optional)
-		if (fileData != null && fileData.length > 4 && fileData[0] == (byte) 0x25) {
-			contentType = "application/pdf";
-		}
+	    if (fileData == null || fileData.length == 0) {
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+	    }
+
+	    // Detect MIME type from file content
+	    String contentType = "application/octet-stream";
+	    try {
+	        contentType = java.net.URLConnection.guessContentTypeFromStream(new java.io.ByteArrayInputStream(fileData));
+	        if (contentType == null) {
+	            contentType = "application/octet-stream";
+	        }
+	    } catch (IOException e) {
+	        contentType = "application/octet-stream";
+	    }
 
 		return ResponseEntity.ok()
-				.header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
+				.header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + getFileExtension(contentType) + "\"")
 				.contentType(MediaType.parseMediaType(contentType))
 				.body(fileData);
 	}
@@ -150,5 +160,13 @@ public class RegisterController {
 	        base64String = base64String.substring(base64String.indexOf(",") + 1);
 	    }
 	    return Base64.getDecoder().decode(base64String);
+	}
+	private String getFileExtension(String mimeType) {
+	    switch (mimeType) {
+	        case "image/jpeg": return ".jpg";
+	        case "image/png": return ".png";
+	        case "application/pdf": return ".pdf";
+	        default: return "";
+	    }
 	}
 }
