@@ -123,7 +123,7 @@ public class RegisterController {
 			break;
 		case "bankpdf":
 			fileData = user.getBankDetailsPdf();
-			filename = "bank_details";
+			filename = "bank_details.pdf";
 			break;
 		case "signature":
 			fileData = user.getSignature();
