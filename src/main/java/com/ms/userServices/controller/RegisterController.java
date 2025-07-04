@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.ContentDisposition;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -139,20 +140,28 @@ public class RegisterController {
 	    }
 
 	    // Detect MIME type from file content
-	    String contentType = "application/octet-stream";
+	    String contentType;
 	    try {
 	        contentType = java.net.URLConnection.guessContentTypeFromStream(new java.io.ByteArrayInputStream(fileData));
 	        if (contentType == null) {
-	            contentType = "application/octet-stream";
+	            if (type.equalsIgnoreCase("license") || type.equalsIgnoreCase("passport") || type.equalsIgnoreCase("photoid")) {
+	            	if (isPdf(fileData)) {
+	                    contentType = "application/pdf";
+	                } else {
+	                    contentType = "image/jpeg";
+	                }
+	            } else {
+	                contentType = "application/pdf";
+	            }
 	        }
 	    } catch (IOException e) {
 	        contentType = "application/octet-stream";
 	    }
 
-		return ResponseEntity.ok()
-				.header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + getFileExtension(contentType) + "\"")
-				.contentType(MediaType.parseMediaType(contentType))
-				.body(fileData);
+	    return ResponseEntity.ok()
+	            .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + getFileExtension(contentType) + "\"")
+	            .contentType(MediaType.parseMediaType(contentType))
+	            .body(fileData);
 	}
 
 	private byte[] extractSignatureBlob(String base64String) {
@@ -168,5 +177,11 @@ public class RegisterController {
 	        case "application/pdf": return ".pdf";
 	        default: return "";
 	    }
+	}
+	private boolean isPdf(byte[] data) {
+	    // PDF files start with "%PDF"
+	    return data != null && data.length >= 4 &&
+	           data[0] == 0x25 && data[1] == 0x50 &&
+	           data[2] == 0x44 && data[3] == 0x46;
 	}
 }
