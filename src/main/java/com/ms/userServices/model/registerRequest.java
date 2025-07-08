@@ -21,8 +21,8 @@ public class registerRequest {
 	private String postalCode;
 	private String state;
 	private String country;
-	private String checkBox;
-	private String financialInstName;
+	private boolean teamsAndConditions;
+	private String bankName;
 	private String accountName;
 	private String bsbNumber;
 	private String accountNumber;
@@ -35,14 +35,13 @@ public class registerRequest {
 	}
 	public void setSignature(String signature) {
 		this.signature = signature;
+	}	
+	public String getBankName() {
+		return bankName;
 	}
-	public String getFinancialInstName() {
-		return financialInstName;
+	public void setBankName(String bankName) {
+		this.bankName = bankName;
 	}
-	public void setFinancialInstName(String financialInstName) {
-		this.financialInstName = financialInstName;
-	}
-	
 	public String getEmergencyContactName() {
 		return emergencyContactName;
 	}
@@ -133,11 +132,11 @@ public class registerRequest {
 	public void setCountry(String country) {
 		this.country = country;
 	}
-	public String getCheckBox() {
-		return checkBox;
+	public boolean getTeamsAndConditions() {
+		return teamsAndConditions;
 	}
-	public void setCheckBox(String checkBox) {
-		this.checkBox = checkBox;
+	public void setTeamsAndConditions(boolean teamsAndConditions) {
+		this.teamsAndConditions = teamsAndConditions;
 	}
 	public String getAccountName() {
 		return accountName;

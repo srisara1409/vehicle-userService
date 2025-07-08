@@ -38,7 +38,7 @@ public class UserInfo {
 	private String vehicleType;
 	private String licenseNumber;
 	private String licenseState;
-	private String financialInstName;
+	private String bankName;
 	
 	@Lob
 	@JsonIgnore
@@ -65,7 +65,7 @@ public class UserInfo {
 	private String postalCode;
 	private String state;
 	private String country;
-	private boolean checkBox;
+	private boolean teamsAndConditions;
 	private String accountName;
 	private String bsbNumber;
 	private String accountNumber;
@@ -90,11 +90,11 @@ public class UserInfo {
 	public void setVehicles(List<VehicleDetails> vehicles) {
 		this.vehicles = vehicles;
 	}
-	public String getFinancialInstName() {
-		return financialInstName;
+	public String getBankName() {
+		return bankName;
 	}
-	public void setFinancialInstName(String financialInstName) {
-		this.financialInstName = financialInstName;
+	public void setBankName(String bankName) {
+		this.bankName = bankName;
 	}
 	public String getEmergencyContactName() {
 		return emergencyContactName;
@@ -216,11 +216,11 @@ public class UserInfo {
 	public void setCountry(String country) {
 		this.country = country;
 	}
-	public boolean getCheckBox() {
-		return checkBox;
+	public boolean getTeamsAndConditions() {
+		return teamsAndConditions;
 	}
-	public void setCheckBox(boolean checkBox) {
-		this.checkBox = checkBox;
+	public void setTeamsAndConditions(boolean teamsAndConditions) {
+		this.teamsAndConditions = teamsAndConditions;
 	}
 	public String getAccountName() {
 		return accountName;

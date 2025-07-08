@@ -87,7 +87,7 @@ public class RegisterController {
 		user.setSignature(signatureBlob);
 		
 		byte[] pdf = registerService.generateBankDetailsPdf(
-		        user.getAccountName(), user.getBsbNumber(), user.getAccountNumber(),user.getFinancialInstName(), 
+		        user.getAccountName(), user.getBsbNumber(), user.getAccountNumber(),user.getBankName(), 
 		        user.getSignature());
 		user.setStatus("PENDING");
 		user.setBankDetailsPdf(pdf);

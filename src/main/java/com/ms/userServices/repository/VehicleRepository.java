@@ -5,7 +5,6 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.ms.userServices.entity.VehicleDetails;
-import com.ms.userServices.entity.UserInfo;
 
 public interface VehicleRepository extends JpaRepository<VehicleDetails, Long> {
 

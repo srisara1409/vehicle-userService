@@ -7,8 +7,10 @@ import java.util.Optional;
 
 import com.ms.userServices.entity.UserInfo;
 import com.ms.userServices.entity.VehicleDetails;
+import com.ms.userServices.entity.VehicleInfo;
 import com.ms.userServices.model.VehicleRequest;
 import com.ms.userServices.repository.UserLoginRepository;
+import com.ms.userServices.repository.VehicleInfoRepository;
 import com.ms.userServices.services.VehicleService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,9 @@ public class vehicleController {
     
     @Autowired
     private UserLoginRepository userRepository;
+    
+    @Autowired
+    private VehicleInfoRepository vehicleInfoRepository;
 
     @GetMapping
     public String testMethod() {
@@ -49,6 +54,24 @@ public class vehicleController {
         } else {
             return ResponseEntity.badRequest().body("User not found");
         }
+    }
+    
+    @GetMapping("/search")
+    public ResponseEntity<List<VehicleInfo>> searchVehicles(@RequestParam String regNumber) {
+        List<VehicleInfo> vehicles = vehicleInfoRepository
+            .findByRegistrationNumberContainingIgnoreCaseAndStatus(regNumber, "Active");
+        return ResponseEntity.ok(vehicles);
+    }
+    
+    @PostMapping("/addVehicle")
+    public ResponseEntity<String> addVehicle(@RequestBody VehicleInfo vehicleInfo) {
+        // Optional: check if registration number already exists
+        if (vehicleInfoRepository.existsByRegistrationNumber(vehicleInfo.getRegistrationNumber())) {
+            return ResponseEntity.badRequest().body("Vehicle with this registration number already exists.");
+        }
+        vehicleInfo.setStatus("Active");
+        vehicleInfoRepository.save(vehicleInfo);
+        return ResponseEntity.ok("Vehicle added successfully");
     }
     
     @PatchMapping("/update/{userId}")

@@ -14,13 +14,19 @@ public class CorsConfig implements WebMvcConfigurer {
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		
-		System.out.println("Injected CORS Origin: " + allowedOrigin);
+		
 
-		registry.addMapping("/**")
-        .allowedOrigins(allowedOrigin)
-        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
-        .allowedHeaders("*")
-        .allowCredentials(true);
+		String[] originArray = allowedOrigin.split(",");
+		 
+		 System.out.println("Injected CORS Origin: " + allowedOrigin);
+		 
+		// System.out.println("Request Origin: " + request.getHeader("Origin"));
+
+		    registry.addMapping("/**")
+		        .allowedOrigins(originArray)
+		        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
+		        .allowedHeaders("*")
+		        .allowCredentials(true);
 
 	}
 }

@@ -25,7 +25,7 @@ public class RegisterService {
 	
 	private final String baseUploadDir = "uploads";
 
-	public byte[] generateBankDetailsPdf(String accountName, String bsbNumber, String accountNumber, String financialInstName, byte[] signatureImageBytes) throws Exception {
+	public byte[] generateBankDetailsPdf(String accountName, String bsbNumber, String accountNumber, String BankName, byte[] signatureImageBytes) throws Exception {
 		Document document = new Document();
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		PdfWriter.getInstance(document, out);
@@ -48,7 +48,7 @@ public class RegisterService {
 				));
 
 		document.add(new Paragraph(" ")); // spacing
-		document.add(new Paragraph("Financial Institution: " +financialInstName));
+		document.add(new Paragraph("Financial Institution: " + BankName));
 		document.add(new Paragraph("Account Name: " + accountName));
 		document.add(new Paragraph("BSB Number: " + bsbNumber));
 		document.add(new Paragraph("Account Number: " + accountNumber));
