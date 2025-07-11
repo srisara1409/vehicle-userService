@@ -8,11 +8,13 @@ import java.util.Optional;
 import com.ms.userServices.entity.UserInfo;
 import com.ms.userServices.entity.VehicleDetails;
 import com.ms.userServices.entity.VehicleInfo;
+import com.ms.userServices.model.AddVehicleRequest;
 import com.ms.userServices.model.VehicleRequest;
 import com.ms.userServices.repository.UserLoginRepository;
 import com.ms.userServices.repository.VehicleInfoRepository;
 import com.ms.userServices.services.VehicleService;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,12 +65,19 @@ public class vehicleController {
         return ResponseEntity.ok(vehicles);
     }
     
+    @GetMapping("/allVehicle")
+    public List<VehicleInfo> getAllVehicles() {
+        return vehicleInfoRepository.findAll();
+    }
+    
     @PostMapping("/addVehicle")
-    public ResponseEntity<String> addVehicle(@RequestBody VehicleInfo vehicleInfo) {
+    public ResponseEntity<String> addVehicle(@RequestBody AddVehicleRequest addVehicleRequest) {
         // Optional: check if registration number already exists
-        if (vehicleInfoRepository.existsByRegistrationNumber(vehicleInfo.getRegistrationNumber())) {
+        if (vehicleInfoRepository.existsByRegistrationNumber(addVehicleRequest.getRegistrationNumber())) {
             return ResponseEntity.badRequest().body("Vehicle with this registration number already exists.");
         }
+        VehicleInfo vehicleInfo = new VehicleInfo();
+		BeanUtils.copyProperties(addVehicleRequest, vehicleInfo);
         vehicleInfo.setStatus("Active");
         vehicleInfoRepository.save(vehicleInfo);
         return ResponseEntity.ok("Vehicle added successfully");

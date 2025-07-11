@@ -70,20 +70,20 @@ public class RegisterController {
 
 	@PostMapping(consumes = {"multipart/form-data"})
 	public ResponseEntity<byte[]> registerUser(
-			@RequestPart("formData") registerRequest data,
+			@RequestPart("formData") registerRequest registerRequest,
 			@RequestPart(value = "licensePhoto", required = false) MultipartFile licensePhoto,
 			@RequestPart(value = "passportCopy", required = false) MultipartFile passportCopy,
 			@RequestPart(value = "photoIdCopy", required = false) MultipartFile photoIdCopy
 			//@RequestPart(value = "signature", required = false) MultipartFile signature
 			) throws Exception {
 		UserInfo user = new UserInfo();
-		BeanUtils.copyProperties(data, user);
+		BeanUtils.copyProperties(registerRequest, user);
 
 		user.setLicensePhoto(licensePhoto != null ? licensePhoto.getBytes() : null);
 		user.setPassportCopy(passportCopy != null ? passportCopy.getBytes() : null);
 		user.setPhotoIdCopy(photoIdCopy != null ? photoIdCopy.getBytes() : null);
 		//user.setSignature(signature != null ? signature.getBytes() : null);
-		byte[] signatureBlob = extractSignatureBlob(data.getSignature());
+		byte[] signatureBlob = extractSignatureBlob(registerRequest.getSignature());
 		user.setSignature(signatureBlob);
 		
 		byte[] pdf = registerService.generateBankDetailsPdf(
