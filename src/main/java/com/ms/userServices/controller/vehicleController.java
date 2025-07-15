@@ -2,8 +2,11 @@ package com.ms.userServices.controller;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.ms.userServices.entity.UserInfo;
 import com.ms.userServices.entity.VehicleDetails;
@@ -59,10 +62,20 @@ public class vehicleController {
     }
     
     @GetMapping("/search")
-    public ResponseEntity<List<VehicleInfo>> searchVehicles(@RequestParam String regNumber) {
+    public ResponseEntity<List<Map<String, Object>>>  searchVehicles(@RequestParam String regNumber) {
         List<VehicleInfo> vehicles = vehicleInfoRepository
             .findByRegistrationNumberContainingIgnoreCaseAndStatus(regNumber, "Active");
-        return ResponseEntity.ok(vehicles);
+        List<Map<String, Object>> summaries = vehicles.stream().map(vehicle -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("registrationNumber", vehicle.getRegistrationNumber());
+            map.put("make", vehicle.getMake());
+            map.put("model", vehicle.getModel());
+            map.put("year", vehicle.getYear());
+            map.put("fuelType", vehicle.getFuelType());
+            return map;
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(summaries);
     }
     
     @GetMapping("/allVehicle")

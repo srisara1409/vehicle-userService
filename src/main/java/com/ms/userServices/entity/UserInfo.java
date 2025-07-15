@@ -38,6 +38,7 @@ public class UserInfo {
 	private String vehicleType;
 	private String licenseNumber;
 	private String licenseState;
+	private String licenseCountry;
 	private String bankName;
 	
 	@Lob
@@ -60,7 +61,8 @@ public class UserInfo {
 	@JsonIgnore
 	private byte[] bankDetailsPdf;
 	
-	private String addressLine;
+	private String addressLine1;
+	private String addressLine2;
 	private String city;
 	private String postalCode;
 	private String state;
@@ -168,6 +170,12 @@ public class UserInfo {
 	public void setLicenseState(String licenseState) {
 		this.licenseState = licenseState;
 	}
+	public String getLicenseCountry() {
+		return licenseCountry;
+	}
+	public void setLicenseCountry(String licenseCountry) {
+		this.licenseCountry = licenseCountry;
+	}
 	public byte[] getLicensePhoto() {
 		return licensePhoto;
 	}
@@ -186,11 +194,17 @@ public class UserInfo {
 	public void setPhotoIdCopy(byte[] photoIdCopy) {
 		this.photoIdCopy = photoIdCopy;
 	}
-	public String getAddressLine() {
-		return addressLine;
+	public String getAddressLine1() {
+		return addressLine1;
 	}
-	public void setAddressLine(String addressLine) {
-		this.addressLine = addressLine;
+	public void setAddressLine1(String addressLine1) {
+		this.addressLine1 = addressLine1;
+	}
+	public String getAddressLine2() {
+		return addressLine2;
+	}
+	public void setAddressLine2(String addressLine2) {
+		this.addressLine2 = addressLine2;
 	}
 	public String getCity() {
 		return city;
