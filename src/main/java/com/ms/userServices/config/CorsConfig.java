@@ -1,6 +1,5 @@
 package com.ms.userServices.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -21,9 +20,11 @@ public class CorsConfig implements WebMvcConfigurer {
 		 //System.out.println("Injected CORS Origin: " + allowedOrigin);
 		 
 		// System.out.println("Request Origin: " + request.getHeader("Origin"));
+		
 
 		    registry.addMapping("/**")
 		        .allowedOrigins("https://desiboysrental.com", "https://www.desiboysrental.com")
+		        //.allowedOrigins("http://localhost:3000")
 		        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
 		        .allowedHeaders("*")
 		        .allowCredentials(true);

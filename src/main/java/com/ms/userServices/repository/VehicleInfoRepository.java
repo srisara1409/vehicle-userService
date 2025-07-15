@@ -12,6 +12,8 @@ public interface VehicleInfoRepository extends JpaRepository<VehicleInfo, Long> 
 	List<VehicleInfo> findByRegistrationNumberContainingIgnoreCaseAndStatus(String regNumberPart, String status);
 	
 	boolean existsByRegistrationNumber(String registrationNumber);
+	
+	Optional<VehicleInfo> findByRegistrationNumber(String registrationNumber);
 }
 
 
