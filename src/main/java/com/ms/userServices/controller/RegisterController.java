@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.ContentDisposition;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -73,8 +74,8 @@ public class RegisterController {
 			@RequestPart("formData") registerRequest registerRequest,
 			@RequestPart(value = "licensePhoto", required = false) MultipartFile licensePhoto,
 			@RequestPart(value = "passportCopy", required = false) MultipartFile passportCopy,
-			@RequestPart(value = "photoIdCopy", required = false) MultipartFile photoIdCopy
-			//@RequestPart(value = "signature", required = false) MultipartFile signature
+			@RequestPart(value = "photoIdCopy", required = false) MultipartFile photoIdCopy,
+			@RequestPart(value = "signatureFile", required = false) MultipartFile signature
 			) throws Exception {
 		UserInfo user = new UserInfo();
 		BeanUtils.copyProperties(registerRequest, user);
@@ -82,9 +83,9 @@ public class RegisterController {
 		user.setLicensePhoto(licensePhoto != null ? licensePhoto.getBytes() : null);
 		user.setPassportCopy(passportCopy != null ? passportCopy.getBytes() : null);
 		user.setPhotoIdCopy(photoIdCopy != null ? photoIdCopy.getBytes() : null);
-		//user.setSignature(signature != null ? signature.getBytes() : null);
-		byte[] signatureBlob = extractSignatureBlob(registerRequest.getSignature());
-		user.setSignature(signatureBlob);
+		user.setSignature(signature != null ? signature.getBytes() : null);
+		//byte[] signatureBlob = extractSignatureBlob(registerRequest.getSignature());
+		//user.setSignature(signatureBlob);
 		
 		byte[] pdf = registerService.generateBankDetailsPdf(
 		        user.getAccountName(), user.getBsbNumber(), user.getAccountNumber(),user.getBankName(), 
@@ -163,13 +164,23 @@ public class RegisterController {
 	            .contentType(MediaType.parseMediaType(contentType))
 	            .body(fileData);
 	}
-
-	private byte[] extractSignatureBlob(String base64String) {
-	    if (base64String != null && base64String.startsWith("data:image")) {
-	        base64String = base64String.substring(base64String.indexOf(",") + 1);
+	
+	@DeleteMapping("/delete/{id}")
+	public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+	    if (!userRepo.existsById(id)) {
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
 	    }
-	    return Base64.getDecoder().decode(base64String);
+
+	    userRepo.deleteById(id);
+	    return ResponseEntity.ok("User deleted successfully");
 	}
+
+//	private byte[] extractSignatureBlob(String base64String) {
+//	    if (base64String != null && base64String.startsWith("data:image")) {
+//	        base64String = base64String.substring(base64String.indexOf(",") + 1);
+//	    }
+//	    return Base64.getDecoder().decode(base64String);
+//	}
 	private String getFileExtension(String mimeType) {
 	    switch (mimeType) {
 	        case "image/jpeg": return ".jpg";
