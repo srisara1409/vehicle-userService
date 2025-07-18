@@ -1,10 +1,13 @@
 package com.ms.userServices.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.Getter;
 import lombok.Setter;
 
 @Setter
 @Getter
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class registerRequest {
 
 	private String firstName;
