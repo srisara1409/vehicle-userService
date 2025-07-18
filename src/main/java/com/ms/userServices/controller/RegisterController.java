@@ -2,6 +2,8 @@ package com.ms.userServices.controller;
 
 import java.io.IOException;
 import java.util.Base64;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,12 +73,19 @@ public class RegisterController {
 
 	@PostMapping(consumes = {"multipart/form-data"})
 	public ResponseEntity<byte[]> registerUser(
-			@RequestPart("formData") registerRequest registerRequest,
+			@RequestPart("formData") String formDataJson,
 			@RequestPart(value = "licensePhoto", required = false) MultipartFile licensePhoto,
 			@RequestPart(value = "passportCopy", required = false) MultipartFile passportCopy,
 			@RequestPart(value = "photoIdCopy", required = false) MultipartFile photoIdCopy,
 			@RequestPart(value = "signatureFile", required = false) MultipartFile signature
-			) throws Exception {
+			) {
+		try {
+		
+		System.out.println("Received JSON: " + formDataJson);
+		
+		ObjectMapper objectMapper = new ObjectMapper();
+		registerRequest registerRequest = objectMapper.readValue(formDataJson, registerRequest.class);
+
 		UserInfo user = new UserInfo();
 		BeanUtils.copyProperties(registerRequest, user);
 
@@ -97,7 +106,13 @@ public class RegisterController {
 	            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=BankDetails.pdf")
 	            .contentType(MediaType.APPLICATION_PDF)
 	            .body(pdf);
+		} catch (Exception e) {
+			System.err.println("Registration failed: " + e.getMessage());
+		    //e.printStackTrace();  // Log the exact parsing error
+		    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // 400 Bad Request
+		}
 	}
+	
 
 	@GetMapping("/file/{id}/{type}")
 	public ResponseEntity<byte[]> getFile(
