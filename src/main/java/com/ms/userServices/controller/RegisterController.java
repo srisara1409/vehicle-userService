@@ -1,7 +1,6 @@
 package com.ms.userServices.controller;
 
 import java.io.IOException;
-import java.util.Base64;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
@@ -11,13 +10,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.ContentDisposition;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,12 +35,6 @@ public class RegisterController {
 
 	@Autowired
 	private RegisterService registerService;
-	
-//	private final FileStorageService fileService;
-//
-//    public FileUpdateController(FileStorageService fileService) {
-//        this.fileService = fileService;
-//    }
 
     @PostMapping("/updateFiles")
     public ResponseEntity<String> updateFiles(
@@ -93,8 +86,6 @@ public class RegisterController {
 		user.setPassportCopy(passportCopy != null ? passportCopy.getBytes() : null);
 		user.setPhotoIdCopy(photoIdCopy != null ? photoIdCopy.getBytes() : null);
 		user.setSignature(signature != null ? signature.getBytes() : null);
-		//byte[] signatureBlob = extractSignatureBlob(registerRequest.getSignature());
-		//user.setSignature(signatureBlob);
 		
 		byte[] pdf = registerService.generateBankDetailsPdf(
 		        user.getAccountName(), user.getBsbNumber(), user.getAccountNumber(),user.getBankName(), 
@@ -108,7 +99,6 @@ public class RegisterController {
 	            .body(pdf);
 		} catch (Exception e) {
 			System.err.println("Registration failed: " + e.getMessage());
-		    //e.printStackTrace();  // Log the exact parsing error
 		    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // 400 Bad Request
 		}
 	}
@@ -179,6 +169,16 @@ public class RegisterController {
 	            .contentType(MediaType.parseMediaType(contentType))
 	            .body(fileData);
 	}
+	
+	@PatchMapping("/update/{id}")
+    public ResponseEntity<String> updateUserInfo(@PathVariable Long id, @RequestBody UserInfo updatedUser) {
+        boolean success = registerService.updateUserInfo(id, updatedUser);
+        if (success) {
+            return ResponseEntity.ok("User details updated successfully.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+        }
+    }
 	
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<String> deleteUser(@PathVariable Long id) {

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -20,11 +21,12 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class VehicleDetails {
+public class UserVehicleInfo {
 
 	@Id
-	@GeneratedValue
-	private Long id;
+	@Column(name = "vehicle_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long userVehicleId;
 
 	private Integer bondAmount;
 	private Integer bondWeeks;
@@ -32,32 +34,39 @@ public class VehicleDetails {
 	private String bondEndDate;
 	
 	@Column(name = "vehicle_make")
-	private String make;
+	private String vehicleMake;
 	
 	@Column(name = "vehicle_year")
-	private Integer year;
-	private String Model;
+	private Integer vehicleYear;
+	
+	private String vehicleModel;
 	private String registrationNumber;
 	private String fuelType;
 	private String note;
+	private String vehicleStatus;
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	@JsonBackReference
 	private UserInfo user;
 
-	
+	public Long getUserVehicleId() {
+		return userVehicleId;
+	}
+	public void setUserVehicleId(Long userVehicleId) {
+		this.userVehicleId = userVehicleId;
+	}
+	public String getVehicleStatus() {
+		return vehicleStatus;
+	}
+	public void setVehicleStatus(String vehicleStatus) {
+		this.vehicleStatus = vehicleStatus;
+	}
 	public UserInfo getUser() {
 		return user;
 	}
 	public void setUser(UserInfo user) {
 		this.user = user;
-	}
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
 	}
 	public String getBondEndDate() {
 		return bondEndDate;
@@ -83,23 +92,23 @@ public class VehicleDetails {
 	public void setBondStartDate(String bondStartDate) {
 		this.bondStartDate = bondStartDate;
 	}
-	public String getMake() {
-		return make;
+	public String getVehicleModel() {
+		return vehicleModel;
 	}
-	public void setMake(String make) {
-		this.make = make;
+	public void setVehicleModel(String vehicleModel) {
+		this.vehicleModel = vehicleModel;
 	}
-	public Integer getYear() {
-		return year;
+	public String getVehicleMake() {
+		return vehicleMake;
 	}
-	public void setYear(Integer year) {
-		this.year = year;
+	public void setVehicleMake(String vehicleMake) {
+		this.vehicleMake = vehicleMake;
 	}
-	public String getModel() {
-		return Model;
+	public Integer getVehicleYear() {
+		return vehicleYear;
 	}
-	public void setModel(String model) {
-		Model = model;
+	public void setVehicleYear(Integer vehicleYear) {
+		this.vehicleYear = vehicleYear;
 	}
 	public String getRegistrationNumber() {
 		return registrationNumber;

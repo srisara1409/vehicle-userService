@@ -11,12 +11,20 @@ public class VehicleRequest {
 	private Integer bondWeeks;
 	private String bondStartDate;
 	private String bondEndDate;
-	private String make;
-	private Integer year;
-	private String Model;
+	private String vehicleMake;
+	private Integer vehicleYear;
+	private String vehicleModel;
 	private String registrationNumber;
 	private String fuelType;
 	private String note;
+	private String vehicleStatus;
+	
+	public String getVehicleStatus() {
+		return vehicleStatus;
+	}
+	public void setVehicleStatus(String vehicleStatus) {
+		this.vehicleStatus = vehicleStatus;
+	}
 	public Integer getBondAmount() {
 		return bondAmount;
 	}
@@ -41,23 +49,23 @@ public class VehicleRequest {
 	public void setBondEndDate(String bondEndDate) {
 		this.bondEndDate = bondEndDate;
 	}
-	public String getMake() {
-		return make;
+	public String getVehicleMake() {
+		return vehicleMake;
 	}
-	public void setMake(String make) {
-		this.make = make;
+	public void setVehicleMake(String vehicleMake) {
+		this.vehicleMake = vehicleMake;
 	}
-	public Integer getYear() {
-		return year;
+	public Integer getVehicleYear() {
+		return vehicleYear;
 	}
-	public void setYear(Integer year) {
-		this.year = year;
+	public void setVehicleYear(Integer vehicleYear) {
+		this.vehicleYear = vehicleYear;
 	}
-	public String getModel() {
-		return Model;
+	public String getVehicleModel() {
+		return vehicleModel;
 	}
-	public void setModel(String model) {
-		Model = model;
+	public void setVehicleModel(String vehicleModel) {
+		this.vehicleModel = vehicleModel;
 	}
 	public String getRegistrationNumber() {
 		return registrationNumber;

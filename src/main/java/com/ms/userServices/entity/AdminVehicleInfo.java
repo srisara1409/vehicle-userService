@@ -8,28 +8,35 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "vehicleInfo")
-public class VehicleInfo {
+@Table(name = "adminVehicleInfo")
+public class AdminVehicleInfo {
 	
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "AdminVehicleId")
+    private Long AdminVehicleId;
 
     @Column(name = "registration_number", unique = true, nullable = false)
     private String registrationNumber;
 
-    private String model;
-    private String make;
-    private int year;
+    private String vehicleModel;
+    private String vehicleMake;
+    private int vehicleYear;
     private String fuelType;
     private String vehicleType;
-    private String status;
-    
-	public Long getId() {
-		return id;
+    private String vehicleStatus;
+     
+	public Long getAdminVehicleId() {
+		return AdminVehicleId;
 	}
-	public void setId(Long id) {
-		this.id = id;
+	public void setAdminVehicleId(Long adminVehicleId) {
+		AdminVehicleId = adminVehicleId;
+	}
+	public String getVehicleStatus() {
+		return vehicleStatus;
+	}
+	public void setVehicleStatus(String vehicleStatus) {
+		this.vehicleStatus = vehicleStatus;
 	}
 	public String getRegistrationNumber() {
 		return registrationNumber;
@@ -37,23 +44,23 @@ public class VehicleInfo {
 	public void setRegistrationNumber(String registrationNumber) {
 		this.registrationNumber = registrationNumber;
 	}
-	public String getModel() {
-		return model;
+	public String getVehicleModel() {
+		return vehicleModel;
 	}
-	public void setModel(String model) {
-		this.model = model;
+	public void setVehicleModel(String vehicleModel) {
+		this.vehicleModel = vehicleModel;
 	}
-	public String getMake() {
-		return make;
+	public String getVehicleMake() {
+		return vehicleMake;
 	}
-	public void setMake(String make) {
-		this.make = make;
+	public void setVehicleMake(String vehicleMake) {
+		this.vehicleMake = vehicleMake;
 	}
-	public int getYear() {
-		return year;
+	public int getVehicleYear() {
+		return vehicleYear;
 	}
-	public void setYear(int year) {
-		this.year = year;
+	public void setVehicleYear(int vehicleYear) {
+		this.vehicleYear = vehicleYear;
 	}
 	public String getFuelType() {
 		return fuelType;
@@ -66,11 +73,5 @@ public class VehicleInfo {
 	}
 	public void setVehicleType(String vehicleType) {
 		this.vehicleType = vehicleType;
-	}
-	public String getStatus() {
-		return status;
-	}
-	public void setStatus(String status) {
-		this.status = status;
 	}
 }

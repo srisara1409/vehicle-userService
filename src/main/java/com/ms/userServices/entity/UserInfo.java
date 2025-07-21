@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
@@ -25,21 +26,37 @@ import lombok.Setter;
 public class UserInfo {
 
 	@Id 
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	private String firstName;
-	private String lastName;
-	private String dateOfBirth;
-	private String mobileNumber;
-	private String email;
+    private String lastName;
+    private String dateOfBirth;
+    private String email;
+    private String mobileNumber;
 
-	
-	private String vehicleType;
-	private String licenseNumber;
-	private String licenseState;
-	private String licenseCountry;
-	private String bankName;
+    private String emergencyContactName;
+    private String emergencyContactNumber;
+
+    private String addressLine1;
+    private String addressLine2;
+    private String city;
+    private String state;
+    private String postalCode;
+    private String country;
+
+    private String bankName;
+    private String accountName;
+    private String bsbNumber;
+    private String accountNumber;
+
+    private String vehicleType;
+    private String licenseNumber;
+    private String licenseState;
+    private String licenseCountry;
+    
+	private boolean teamsAndConditions;
+	private String status;
 	
 	@Lob
 	@JsonIgnore
@@ -60,25 +77,10 @@ public class UserInfo {
 	@Lob
 	@JsonIgnore
 	private byte[] bankDetailsPdf;
-	
-	private String addressLine1;
-	private String addressLine2;
-	private String city;
-	private String postalCode;
-	private String state;
-	private String country;
-	private boolean teamsAndConditions;
-	private String accountName;
-	private String bsbNumber;
-	private String accountNumber;
-	private String status;
-	private String emergencyContactName;
-	private String emergencyContactNumber;
-	
+
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	private List<VehicleDetails> vehicles = new ArrayList<>();
-	
+	private List<UserVehicleInfo> vehicles = new ArrayList<>();
 	
 	public byte[] getSignature() {
 		return signature;
@@ -86,10 +88,10 @@ public class UserInfo {
 	public void setSignature(byte[] signature) {
 		this.signature = signature;
 	}
-	public List<VehicleDetails> getVehicles() {
+	public List<UserVehicleInfo> getVehicles() {
 		return vehicles;
 	}
-	public void setVehicles(List<VehicleDetails> vehicles) {
+	public void setVehicles(List<UserVehicleInfo> vehicles) {
 		this.vehicles = vehicles;
 	}
 	public String getBankName() {

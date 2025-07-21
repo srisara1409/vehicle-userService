@@ -2,6 +2,9 @@ package com.ms.userServices.services;
 
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.ms.userServices.entity.UserInfo;
+import com.ms.userServices.repository.UserLoginRepository;
+import com.ms.userServices.repository.UserVehicleInfoRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,12 +19,16 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
+import java.util.logging.Logger;
 
 @Service
 public class RegisterService {
 
-//	@Autowired
-//	private VehicleRepository repo;
+	private static final Logger LOGGER = Logger.getLogger(RegisterService.class.getName());
+	
+	@Autowired
+	private UserLoginRepository userLoginRepository;
 	
 	private final String baseUploadDir = "uploads";
 
@@ -92,5 +99,58 @@ public class RegisterService {
         String cleanName = StringUtils.cleanPath(filename);
         int index = cleanName.lastIndexOf('.');
         return (index > 0) ? cleanName.substring(index + 1) : "pdf";
+    }
+    
+    public boolean updateUserInfo(Long id, UserInfo updatedUser) {
+        Optional<UserInfo> optionalUser = userLoginRepository.findById(id);
+        if (optionalUser.isPresent()) {
+            UserInfo existingUser = optionalUser.get();
+            LOGGER.info("Updating user info for ID: " + id);
+
+            applyUserUpdates(existingUser, updatedUser);
+
+            userLoginRepository.save(existingUser);
+            LOGGER.info("User info updated and saved successfully for ID: " + id);
+            return true;
+        } else {
+            LOGGER.warning("User with ID " + id + " not found.");
+            return false;
+        }
+    }
+
+    /**
+     * Applies only non-null fields from updatedUser to existingUser.
+     */
+    private void applyUserUpdates(UserInfo existingUser, UserInfo updatedUser) {
+        // Basic Info
+        if (updatedUser.getFirstName() != null) existingUser.setFirstName(updatedUser.getFirstName());
+        if (updatedUser.getLastName() != null) existingUser.setLastName(updatedUser.getLastName());
+        if (updatedUser.getDateOfBirth() != null) existingUser.setDateOfBirth(updatedUser.getDateOfBirth());
+        if (updatedUser.getEmail() != null) existingUser.setEmail(updatedUser.getEmail());
+        if (updatedUser.getMobileNumber() != null) existingUser.setMobileNumber(updatedUser.getMobileNumber());
+
+        // Emergency
+        if (updatedUser.getEmergencyContactName() != null) existingUser.setEmergencyContactName(updatedUser.getEmergencyContactName());
+        if (updatedUser.getEmergencyContactNumber() != null) existingUser.setEmergencyContactNumber(updatedUser.getEmergencyContactNumber());
+
+        // Address
+        if (updatedUser.getAddressLine1() != null) existingUser.setAddressLine1(updatedUser.getAddressLine1());
+        if (updatedUser.getAddressLine2() != null) existingUser.setAddressLine2(updatedUser.getAddressLine2());
+        if (updatedUser.getCity() != null) existingUser.setCity(updatedUser.getCity());
+        if (updatedUser.getState() != null) existingUser.setState(updatedUser.getState());
+        if (updatedUser.getPostalCode() != null) existingUser.setPostalCode(updatedUser.getPostalCode());
+        if (updatedUser.getCountry() != null) existingUser.setCountry(updatedUser.getCountry());
+
+        // Bank
+        if (updatedUser.getBankName() != null) existingUser.setBankName(updatedUser.getBankName());
+        if (updatedUser.getAccountName() != null) existingUser.setAccountName(updatedUser.getAccountName());
+        if (updatedUser.getBsbNumber() != null) existingUser.setBsbNumber(updatedUser.getBsbNumber());
+        if (updatedUser.getAccountNumber() != null) existingUser.setAccountNumber(updatedUser.getAccountNumber());
+
+        // License
+        if (updatedUser.getVehicleType() != null) existingUser.setVehicleType(updatedUser.getVehicleType());
+        if (updatedUser.getLicenseNumber() != null) existingUser.setLicenseNumber(updatedUser.getLicenseNumber());
+        if (updatedUser.getLicenseState() != null) existingUser.setLicenseState(updatedUser.getLicenseState());
+        if (updatedUser.getLicenseCountry() != null) existingUser.setLicenseCountry(updatedUser.getLicenseCountry());
     }
 }
