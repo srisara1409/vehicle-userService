@@ -36,7 +36,7 @@ public class AdminVehicleController {
 
     @PutMapping("/updateVehicleStatus/{registrationNumber}")
     public ResponseEntity<String> updateVehicleStatus(@PathVariable String registrationNumber,
-                                                      @RequestParam String status) {
-        return adminVehicleService.updateVehicleStatus(registrationNumber, status);
+                                                      @RequestParam String vehicleStatus ) {
+        return adminVehicleService.updateVehicleStatus(registrationNumber, vehicleStatus );
     }
 }

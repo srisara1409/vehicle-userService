@@ -38,6 +38,7 @@ public class UserVehicleService {
             UserVehicleInfo vehicle = new UserVehicleInfo();
             BeanUtils.copyProperties(vehicleRequest, vehicle);
             vehicle.setUser(user);
+            //vehicle.setVehicleStatus("Active");
             user.setStatus("APPROVED");
             userVehicleInfoRepository.save(vehicle);
             return true;
