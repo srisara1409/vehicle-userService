@@ -10,10 +10,12 @@ import java.util.stream.Collectors;
 
 import com.ms.userServices.entity.UserInfo;
 import com.ms.userServices.entity.UserVehicleInfo;
+import com.ms.userServices.DTO.InactiveVehicleDTO;
 import com.ms.userServices.entity.AdminVehicleInfo;
 import com.ms.userServices.model.AddVehicleRequest;
 import com.ms.userServices.model.VehicleRequest;
 import com.ms.userServices.repository.UserLoginRepository;
+import com.ms.userServices.repository.UserVehicleInfoRepository;
 import com.ms.userServices.repository.AdminVehicleInfoRepository;
 import com.ms.userServices.services.UserVehicleService;
 
@@ -32,6 +34,9 @@ public class UserVehicleController {
 
 	@Autowired
 	private UserLoginRepository userRepository;
+	
+	@Autowired
+	private UserVehicleInfoRepository userVehicleInfoRepository;
 
 
 	@GetMapping
@@ -73,10 +78,61 @@ public class UserVehicleController {
 		} catch (IllegalStateException e) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage()); // Duplicate reg number
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred.");
+			e.printStackTrace(); 
+			return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body("Not able to modified the record, Please check the updated field.");
 		}
 	}
 
+	@GetMapping("/inactiveVehicles/{userId}")
+	public ResponseEntity<List<InactiveVehicleDTO>> getInactiveVehiclesByUser(@PathVariable Long userId) {
+	    return ResponseEntity.ok(userVehicleInfoRepository.findInactiveVehiclesByUserId(userId));
+	}
+	
+	@PatchMapping("/updateUserVehicleStatus/{userVehicleId}")
+	public ResponseEntity<String> updateVehicleStatus(
+	        @PathVariable Long userVehicleId,
+	        @RequestBody Map<String, String> payload) {
+
+	    try {
+	        String newStatus = payload.get("vehicleStatus");
+	        if (newStatus == null || (!newStatus.equalsIgnoreCase("Active") && !newStatus.equalsIgnoreCase("InActive"))) {
+	            return ResponseEntity.badRequest().body("Invalid vehicle status");
+	        }
+
+	        Optional<UserVehicleInfo> vehicleOpt = userVehicleInfoRepository.findById(userVehicleId);
+	        if (vehicleOpt.isEmpty()) {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Vehicle not found");
+	        }
+
+	        UserVehicleInfo vehicle = vehicleOpt.get();
+	        Long userId = vehicle.getUser().getId(); // assumes vehicle has a User object
+
+	        // ✅ Only check when trying to mark a vehicle as Active
+	        if (newStatus.equalsIgnoreCase("Active")) {
+	            List<UserVehicleInfo> activeVehicles = userVehicleInfoRepository.findByUserIdAndVehicleStatusIgnoreCase(userId, "Active");
+
+	            // Exclude the current vehicle from count (if it’s currently inactive)
+	            boolean alreadyActive = vehicle.getVehicleStatus().equalsIgnoreCase("Active");
+	            int activeCount = (int) activeVehicles.stream()
+	                    .filter(v -> !v.getUserVehicleId().equals(userVehicleId))
+	                    .count();
+
+	            if (!alreadyActive && activeCount >= 2) {
+	                return ResponseEntity.status(HttpStatus.CONFLICT).body("User already has 2 active vehicles. Please mark one as Inactive first.");
+	            }
+	        }
+
+	        // ✅ Update and save
+	        vehicle.setVehicleStatus(newStatus);
+	        userVehicleInfoRepository.save(vehicle);
+	        return ResponseEntity.ok("Vehicle status updated successfully");
+
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
+	    }
+	}
+
+	
 	@GetMapping("/updateUserClosed/{userId}")
 	public ResponseEntity<String> updateUserStatusIfAllVehiclesEnded(@PathVariable("userId") Long userId) {
 		Optional<UserInfo> optionalUser = userRepository.findById(userId);

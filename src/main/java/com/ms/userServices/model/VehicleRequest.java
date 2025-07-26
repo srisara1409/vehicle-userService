@@ -7,6 +7,7 @@ import lombok.Setter;
 @Setter
 public class VehicleRequest {
 	
+	private Long UserVehicleId;
 	private Integer bondAmount;
 	private Integer bondWeeks;
 	private String bondStartDate;
@@ -19,6 +20,13 @@ public class VehicleRequest {
 	private String note;
 	private String vehicleStatus;
 	
+	
+	public Long getUserVehicleId() {
+		return UserVehicleId;
+	}
+	public void setUserVehicleId(Long userVehicleId) {
+		UserVehicleId = userVehicleId;
+	}
 	public String getVehicleStatus() {
 		return vehicleStatus;
 	}

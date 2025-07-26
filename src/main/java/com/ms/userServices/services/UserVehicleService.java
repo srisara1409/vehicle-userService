@@ -16,151 +16,103 @@ import com.ms.userServices.repository.UserVehicleInfoRepository;
 @Service
 public class UserVehicleService {
 
-    @Autowired
-    private UserVehicleInfoRepository userVehicleInfoRepository;
+	@Autowired
+	private UserVehicleInfoRepository userVehicleInfoRepository;
 
-    @Autowired
-    private UserLoginRepository userRepo;
+	@Autowired
+	private UserLoginRepository userRepo;
 
-    public List<UserInfo> getUserDetails() {
-        return userRepo.findAll();
-    }
+	public List<UserInfo> getUserDetails() {
+		return userRepo.findAll();
+	}
 
-    public Optional<UserInfo> getUserById(Long id) {
-        return userRepo.findById(id);
-    }
+	public Optional<UserInfo> getUserById(Long id) {
+	    Optional<UserInfo> userOpt = userRepo.findById(id);
+	    userOpt.ifPresent(user -> {
+	        List<UserVehicleInfo> activeVehicles = user.getVehicles().stream()
+	            .filter(v -> "Active".equalsIgnoreCase(v.getVehicleStatus()))
+	            .toList();
+	        user.setVehicles(activeVehicles);
+	    });
+	    return userOpt;
+	}
+	
+//	public Optional<UserInfo> getUserById(Long id) {
+//	    Optional<UserInfo> userOpt = userInfoRepository.findById(id);
+//	    userOpt.ifPresent(user -> {
+//	        List<UserVehicleInfo> activeVehicles = Optional.ofNullable(user.getVehicles())
+//	            .orElse(Collections.emptyList())
+//	            .stream()
+//	            .filter(v -> "Active".equalsIgnoreCase(v.getVehicleStatus()))
+//	            .toList();
+//	        user.setVehicles(activeVehicles);
+//	    });
+//	    return userOpt;
+//	}
 
-    public boolean saveVehicleToUser(Long userId, VehicleRequest vehicleRequest) {
-        Optional<UserInfo> userOpt = userRepo.findById(userId);
-        if (userOpt.isPresent()) {
-            UserInfo user = userOpt.get();
+	public boolean saveVehicleToUser(Long userId, VehicleRequest vehicleRequest) {
+		Optional<UserInfo> userOpt = userRepo.findById(userId);
+		if (userOpt.isPresent()) {
+			UserInfo user = userOpt.get();
 
-            UserVehicleInfo vehicle = new UserVehicleInfo();
-            BeanUtils.copyProperties(vehicleRequest, vehicle);
-            vehicle.setUser(user);
-            //vehicle.setVehicleStatus("Active");
-            user.setStatus("APPROVED");
-            userVehicleInfoRepository.save(vehicle);
-            return true;
-        }
-        return false;
-    }
-    
+			UserVehicleInfo vehicle = new UserVehicleInfo();
+			BeanUtils.copyProperties(vehicleRequest, vehicle);
+			vehicle.setUser(user);
+			vehicle.setVehicleStatus("Active");
+			user.setStatus("APPROVED");
+			userVehicleInfoRepository.save(vehicle);
+			return true;
+		}
+		return false;
+	}
 
+	public boolean addOrUpdateVehicleToUser(Long userId, VehicleRequest vehicleRequest) {
+		Optional<UserInfo> userOpt = userRepo.findById(userId);
+		if (userOpt.isPresent()) {
+			UserInfo user = userOpt.get();
 
-//    public boolean addOrUpdateVehicleToUser(Long userId, VehicleRequest vehicleRequest) {
-//        Optional<UserInfo> userOpt = userRepo.findById(userId);
-//        if (userOpt.isEmpty()) return false;
-//
-//        UserInfo user = userOpt.get();
-//        // Check for duplicate registration number used by another user
-//        Optional<UserVehicleInfo> existingByReg = userVehicleInfoRepository.findByRegistrationNumber(vehicleRequest.getRegistrationNumber());
-//        if (existingByReg.isPresent() && !existingByReg.get().getUser().getId().equals(userId)) {
-//            throw new IllegalStateException("This registration number already exists for another user.");
-//        }
-//        List<UserVehicleInfo> vehicles = user.getVehicles();
-//
-//        // Find if the vehicle already exists by ID
-//        UserVehicleInfo vehicleToUpdate = null;
-//        for (UserVehicleInfo v : vehicles) {
-//            if (vehicleRequest.getUserVehicleId() != null &&
-//                v.getUserVehicleId().equals(vehicleRequest.getUserVehicleId())) {
-//                vehicleToUpdate = v;
-//                break;
-//            }
-//        }
-//
-//        // Count current Active vehicles
-//        long activeCount = vehicles.stream()
-//            .filter(v -> "Active".equalsIgnoreCase(v.getVehicleStatus()))
-//            .count();
-//
-//        String requestedStatus = vehicleRequest.getVehicleStatus();
-//        boolean requestingActive = "Active".equalsIgnoreCase(requestedStatus);
-//
-//        // Case 1: New registration number → Add as new
-//        if (vehicleToUpdate != null &&
-//            !vehicleToUpdate.getRegistrationNumber().equalsIgnoreCase(vehicleRequest.getRegistrationNumber())) {
-//            vehicleToUpdate = null; // treat as new
-//        }
-//
-//        // Enforce max 2 active rule
-//        boolean isNew = (vehicleToUpdate == null);
-//        boolean wasInactive = vehicleToUpdate == null || !"Active".equalsIgnoreCase(vehicleToUpdate.getVehicleStatus());
-//
-//        if (requestingActive && wasInactive && activeCount >= 2) {
-//            throw new IllegalStateException("Only 2 vehicles can be Active at a time for a user.");
-//        }
-//
-//        if (vehicleToUpdate != null) {
-//            // Update existing vehicle
-//            BeanUtils.copyProperties(vehicleRequest, vehicleToUpdate, "userVehicleId", "user");
-//            vehicleToUpdate.setUser(user);
-//            userVehicleInfoRepository.save(vehicleToUpdate);
-//        } else {
-//            // Add as new vehicle
-//            UserVehicleInfo newVehicle = new UserVehicleInfo();
-//            BeanUtils.copyProperties(vehicleRequest, newVehicle);
-//            newVehicle.setUser(user);
-//            userVehicleInfoRepository.save(newVehicle);
-//            user.getVehicles().add(newVehicle);
-//        }
-//
-//        // Set user status
-//        user.setStatus("APPROVED");
-//        userRepo.save(user);
-//        return true;
-//    }
-    
-    public boolean addOrUpdateVehicleToUser(Long userId, VehicleRequest vehicleRequest) {
-        Optional<UserInfo> userOpt = userRepo.findById(userId);
-        if (userOpt.isPresent()) {
-            UserInfo user = userOpt.get();
+			// 🔒 Check for duplicate reg number (used by other user)
+			Optional<UserVehicleInfo> existingReg = userVehicleInfoRepository.findByRegistrationNumber(vehicleRequest.getRegistrationNumber());
+			if (existingReg.isPresent() && existingReg.get().getVehicleStatus().equalsIgnoreCase("Active") && !existingReg.get().getUser().getId().equals(userId)) {
+				throw new IllegalStateException("This registration number already exists for another user.");
+			}
 
-            // ✅ Check if vehicle with the same registration number already exists globally
-            Optional<UserVehicleInfo> existingVehicle = userVehicleInfoRepository.findByRegistrationNumber(vehicleRequest.getRegistrationNumber());
-            if (existingVehicle.isPresent() && !existingVehicle.get().getUser().getId().equals(userId)) {
-                throw new IllegalStateException("This registration number already exists for another user.");
-            }
+			// ✅ If no matching vehicle ID, and status is Active, enforce limit
+			long activeVehicleCount = user.getVehicles().stream()
+					.filter(v -> "Active".equalsIgnoreCase(v.getVehicleStatus()))
+					.count();
 
-            // ✅ Count number of active vehicles for this user
-            long activeVehicleCount = user.getVehicles().stream()
-                .filter(v -> "Active".equalsIgnoreCase(v.getVehicleStatus()))
-                .count();
+			Optional<UserVehicleInfo> existingForSameUser = user.getVehicles().stream()
+					.filter(v -> v.getRegistrationNumber().equalsIgnoreCase(vehicleRequest.getRegistrationNumber()))
+					.findFirst();
 
-            // ✅ If trying to add a new Active vehicle, enforce limit
-            boolean isAddingNew = true;
-            if (!user.getVehicles().isEmpty()) {
-                UserVehicleInfo lastVehicle = user.getVehicles().get(user.getVehicles().size() - 1);
-                if (lastVehicle.getRegistrationNumber().equalsIgnoreCase(vehicleRequest.getRegistrationNumber())) {
-                    isAddingNew = false;
-                    // 🟡 Update last vehicle
-                    BeanUtils.copyProperties(vehicleRequest, lastVehicle);
-                    userVehicleInfoRepository.save(lastVehicle);
-                    return true;
-                }
-            }
+			if ("Active".equalsIgnoreCase(vehicleRequest.getVehicleStatus()) && activeVehicleCount >= 2 && existingForSameUser.isEmpty()) {
+				throw new IllegalStateException("Only 2 vehicles can be Active at a time. Please mark one existing vehicle as Inactive before adding a new Active vehicle.");
+			}
 
-            if (isAddingNew && "Active".equalsIgnoreCase(vehicleRequest.getVehicleStatus()) && activeVehicleCount >= 2) {
-                throw new IllegalStateException("Only 2 vehicles can be Active at a time. Please mark one existing vehicle as Inactive before adding a new Active vehicle.");
-            }
+			if (existingForSameUser.isPresent()) {
+				UserVehicleInfo vehicleToUpdate = existingForSameUser.get();
+				BeanUtils.copyProperties(vehicleRequest, vehicleToUpdate);
+				vehicleToUpdate.setUser(user);
+				userVehicleInfoRepository.save(vehicleToUpdate);
+				return true;
+			}
 
-            // ✅ Add new vehicle if different registration number
-            UserVehicleInfo newVehicle = new UserVehicleInfo();
-            BeanUtils.copyProperties(vehicleRequest, newVehicle);
-            newVehicle.setUser(user);
+			// ✅ Create new if truly a new vehicle
+			UserVehicleInfo newVehicle = new UserVehicleInfo();
+			BeanUtils.copyProperties(vehicleRequest, newVehicle);
+			newVehicle.setUser(user);
+			newVehicle.setUserVehicleId(null);
+			userVehicleInfoRepository.save(newVehicle);
+			// user.getVehicles().add(newVehicle);
+			//user.setStatus("APPROVED");
+			// userRepo.save(user);
 
-            userVehicleInfoRepository.save(newVehicle);
-            user.getVehicles().add(newVehicle);
+			return true;
+		}
 
-            user.setStatus("APPROVED");
-            userRepo.save(user);
-
-            return true;
-        }
-        return false;
-    }
-
+		return false;
+	}
 
 
 }
