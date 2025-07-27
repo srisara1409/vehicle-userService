@@ -70,6 +70,19 @@ public class UserVehicleService {
 		Optional<UserInfo> userOpt = userRepo.findById(userId);
 		if (userOpt.isPresent()) {
 			UserInfo user = userOpt.get();
+			
+		    if (vehicleRequest.getRegistrationNumber() == "" || vehicleRequest.getRegistrationNumber() == null ) {
+		        if (vehicleRequest.getUserVehicleId() != null) {
+		            Optional<UserVehicleInfo> existingEbike = userVehicleInfoRepository.findById(vehicleRequest.getUserVehicleId());
+		            if (existingEbike.isPresent()) {
+		                UserVehicleInfo ebikeToUpdate = existingEbike.get();
+		                BeanUtils.copyProperties(vehicleRequest, ebikeToUpdate);
+		                ebikeToUpdate.setUser(user);
+		                userVehicleInfoRepository.save(ebikeToUpdate);
+		                return true;
+		            }
+		        }
+		    }
 
 			// 🔒 Check for duplicate reg number (used by other user)
 			Optional<UserVehicleInfo> existingReg = userVehicleInfoRepository.findByRegistrationNumber(vehicleRequest.getRegistrationNumber());
