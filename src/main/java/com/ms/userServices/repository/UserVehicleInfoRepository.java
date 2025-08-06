@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.ms.userServices.DTO.InactiveVehicleDTO;
+import com.ms.userServices.DTO.UserVehicleDTO;
 import com.ms.userServices.entity.UserVehicleInfo;
 
 public interface UserVehicleInfoRepository extends JpaRepository<UserVehicleInfo, Long> {
@@ -23,4 +24,12 @@ public interface UserVehicleInfoRepository extends JpaRepository<UserVehicleInfo
 	
 	List<UserVehicleInfo> findByUserIdAndVehicleStatusIgnoreCase(Long userId, String vehicleStatus);
 
+	@Query("""
+		    SELECT new com.ms.userServices.DTO.UserVehicleDTO(
+		        v.user.id, v.userVehicleId, v.registrationNumber, v.vehicleMake, v.vehicleModel
+		    )
+		    FROM UserVehicleInfo v
+		    WHERE v.user.id IN :userIds
+		""")
+		List<UserVehicleDTO> findVehiclesByUserIds(@Param("userIds") List<Long> userIds);
 }

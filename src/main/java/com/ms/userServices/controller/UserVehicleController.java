@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import com.ms.userServices.entity.UserInfo;
 import com.ms.userServices.entity.UserVehicleInfo;
 import com.ms.userServices.DTO.InactiveVehicleDTO;
+import com.ms.userServices.DTO.UserInfoDTO;
 import com.ms.userServices.entity.AdminVehicleInfo;
 import com.ms.userServices.model.AddVehicleRequest;
 import com.ms.userServices.model.VehicleRequest;
@@ -45,8 +46,8 @@ public class UserVehicleController {
 	}
 
 	@GetMapping("/getUser")
-	public List<UserInfo> getAllUsers() {
-		return vehicleService.getUserDetails();
+	public List<UserInfoDTO> getAllUsers() {
+	    return vehicleService.getUserDetails();
 	}
 
 	@GetMapping("/getUser/{id}")

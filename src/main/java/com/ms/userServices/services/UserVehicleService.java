@@ -1,13 +1,17 @@
 package com.ms.userServices.services;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ms.userServices.entity.UserVehicleInfo;
+import com.ms.userServices.DTO.UserInfoDTO;
+import com.ms.userServices.DTO.UserVehicleDTO;
 import com.ms.userServices.entity.UserInfo;
 import com.ms.userServices.model.VehicleRequest;
 import com.ms.userServices.repository.UserLoginRepository;
@@ -21,10 +25,34 @@ public class UserVehicleService {
 
 	@Autowired
 	private UserLoginRepository userRepo;
+	
 
-	public List<UserInfo> getUserDetails() {
-		return userRepo.findAll();
-	}
+    public UserVehicleService(UserLoginRepository userRepo, UserVehicleInfoRepository userVehicleInfoRepository) {
+        this.userRepo = userRepo;
+        this.userVehicleInfoRepository = userVehicleInfoRepository;
+    }
+
+    public List<UserInfoDTO> getUserDetails() {
+        // Step 1: Get basic user info (no LOBs)
+        List<UserInfoDTO> users = userRepo.findAllUserSummaries();
+        List<Long> userIds = users.stream().map(UserInfoDTO::getId).toList();
+
+        if (userIds.isEmpty()) {
+            return users;
+        }
+
+        // Step 2: Fetch all vehicles for these users
+        List<UserVehicleDTO> vehicles = userVehicleInfoRepository.findVehiclesByUserIds(userIds);
+
+        // Step 3: Group vehicles by userId
+        Map<Long, List<UserVehicleDTO>> vehicleMap = vehicles.stream()
+            .collect(Collectors.groupingBy(UserVehicleDTO::getUserId));
+
+        // Step 4: Attach vehicles to each user
+        users.forEach(u -> u.setVehicles(vehicleMap.getOrDefault(u.getId(), List.of())));
+
+        return users;
+    }
 
 	public Optional<UserInfo> getUserById(Long id) {
 	    Optional<UserInfo> userOpt = userRepo.findById(id);
