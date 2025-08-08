@@ -18,6 +18,7 @@ public interface UserVehicleInfoRepository extends JpaRepository<UserVehicleInfo
 	@Query("SELECT v.userVehicleId AS userVehicleId, v.registrationNumber AS registrationNumber, " +
 		       "v.vehicleModel AS vehicleModel, v.vehicleMake AS vehicleMake, " +
 		       "v.vehicleYear AS vehicleYear, v.fuelType AS fuelType, " +
+		       "v.bondStartDate AS bondStartDate, v.bondEndDate AS bondEndDate, " +
 		       "v.vehicleStatus AS vehicleStatus, v.note AS note " +
 		       "FROM UserVehicleInfo v WHERE v.user.id = :userId AND v.vehicleStatus = 'InActive'")
 		List<InactiveVehicleDTO> findInactiveVehiclesByUserId(@Param("userId") Long userId);
@@ -26,7 +27,7 @@ public interface UserVehicleInfoRepository extends JpaRepository<UserVehicleInfo
 
 	@Query("""
 		    SELECT new com.ms.userServices.DTO.UserVehicleDTO(
-		        v.user.id, v.userVehicleId, v.registrationNumber, v.vehicleMake, v.vehicleModel
+		        v.user.id, v.userVehicleId, v.registrationNumber, v.vehicleMake, v.vehicleModel, v.vehicleYear, v.bondStartDate, v.bondEndDate
 		    )
 		    FROM UserVehicleInfo v
 		    WHERE v.user.id IN :userIds

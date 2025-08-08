@@ -5,7 +5,9 @@ public interface InactiveVehicleDTO {
     String getRegistrationNumber();
     String getVehicleModel();
     String getVehicleMake();
-    String getVehicleYear();
+    Integer getVehicleYear();
+    String getBondStartDate();
+    String getBondEndDate();
     String getFuelType();
     String getVehicleStatus();
     String getNote();

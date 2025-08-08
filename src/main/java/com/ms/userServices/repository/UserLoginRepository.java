@@ -12,7 +12,7 @@ public interface UserLoginRepository extends JpaRepository<UserInfo, Long> {
 	
 	@Query("""
 		    SELECT new com.ms.userServices.DTO.UserInfoDTO(
-		        u.id, u.firstName, u.lastName, u.email, u.mobileNumber, u.status
+		        u.id, u.firstName, u.lastName, u.dateOfBirth, u.mobileNumber, u.email, u.vehicleType , u.licenseNumber, u.status
 		    )
 		    FROM UserInfo u
 		""")

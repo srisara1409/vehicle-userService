@@ -7,24 +7,30 @@ public class UserInfoDTO {
     private Long id;
     private String firstName;
     private String lastName;
-    private String email;
+    private String dateOfBirth;
     private String mobileNumber;
+    private String email;
+    private String vehicleType;
+    private String licenseNumber;
     private String status;
     private List<UserVehicleDTO> vehicles;
 
     // JPQL projection constructor
-    public UserInfoDTO(Long id, String firstName, String lastName, String email, String mobileNumber, String status) {
+    public UserInfoDTO(Long id, String firstName, String lastName, String dateOfBirth, String mobileNumber, String email, String vehicleType, String licenseNumber, String status) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.email = email;
+        this.dateOfBirth = dateOfBirth;
         this.mobileNumber = mobileNumber;
+        this.email = email;
+        this.vehicleType = vehicleType;
+        this.licenseNumber = licenseNumber;
         this.status = status;
     }
 
     // Full constructor
-    public UserInfoDTO(Long id, String firstName, String lastName, String email, String mobileNumber, String status, List<UserVehicleDTO> vehicles) {
-        this(id, firstName, lastName, email, mobileNumber, status);
+    public UserInfoDTO(Long id, String firstName, String lastName, String dateOfBirth, String mobileNumber, String email, String vehicleType, String licenseNumber, String status, List<UserVehicleDTO> vehicles) {
+        this(id, firstName, lastName, dateOfBirth, mobileNumber, email, vehicleType, licenseNumber, status);
         this.vehicles = vehicles;
     }
 
@@ -51,6 +57,22 @@ public class UserInfoDTO {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
+	
+	public String getDateOfBirth() {
+		return dateOfBirth;
+	}
+	
+	public void setDateOfBirth(String dateOfBirth) {
+		this.dateOfBirth = dateOfBirth;
+	}
+	
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
 
 	public String getEmail() {
 		return email;
@@ -60,13 +82,21 @@ public class UserInfoDTO {
 		this.email = email;
 	}
 
-	public String getMobileNumber() {
-		return mobileNumber;
+	public String getVehicleType() {
+		return vehicleType;
 	}
 
-	public void setMobileNumber(String mobileNumber) {
-		this.mobileNumber = mobileNumber;
+	public void setVehicleType(String vehicleType) {
+		this.vehicleType = vehicleType;
 	}
+	
+	public String getLicenseNumber () {
+		return licenseNumber;
+	}
+	public void setLicenseNumber(String licenseNumber) {
+		this.licenseNumber = licenseNumber;
+	}
+	
 	public String getStatus() {
 		return status;
 	}
