@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import com.ms.userServices.entity.UserInfo;
 import com.ms.userServices.repository.UserLoginRepository;
 
+import jakarta.transaction.Transactional;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -19,7 +21,9 @@ public class UserStatusScheduler {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    @Scheduled(cron = "0 0 0 * * *", zone = "Australia/Sydney")  // Every day at 12:00 AM Sydney time
+    //@Scheduled(cron = "0 0 0 * * *", zone = "Australia/Sydney")  // Every day at 12:00 AM Sydney time
+    @Transactional 
+    @Scheduled(cron = "0 */50 * * * *", zone = "Australia/Sydney") 
     public void updateClosedUsers() {
         List<UserInfo> users = userLoginRepository.findAll();
 

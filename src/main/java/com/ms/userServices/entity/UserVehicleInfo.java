@@ -1,9 +1,16 @@
 package com.ms.userServices.entity;
 
+import java.time.LocalDateTime;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -20,6 +27,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class UserVehicleInfo {
 
 	@Id
@@ -44,6 +52,14 @@ public class UserVehicleInfo {
 	private String note;
 	private String vehicleStatus;
 
+    @CreatedDate
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+    
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	@JsonBackReference
@@ -126,6 +142,18 @@ public class UserVehicleInfo {
 	}
 	public void setNote(String note) {
 		this.note = note;
+	}
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
+	}
+	public void setUpdatedAt(LocalDateTime updatedAt) {
+		this.updatedAt = updatedAt;
 	}
 
 

@@ -1,7 +1,14 @@
 package com.ms.userServices.entity;
 
+import java.time.LocalDateTime;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -17,6 +24,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "AdminDetails")
+@EntityListeners(AuditingEntityListener.class)
 public class AdminDetails {
 	
 	    @Id
@@ -27,11 +35,20 @@ public class AdminDetails {
 	    private String password;
 	    private String role;
 	    
+	    
 	    @Column(name = "failed_attempts")
 	    private int failedAttempts = 0;
 
 	    @Column(name = "account_locked")
 	    private boolean accountLocked = false;
+	    
+	    @CreatedDate
+	    @Column(name = "created_at", updatable = false)
+	    private LocalDateTime createdAt;
+
+	    @LastModifiedDate
+	    @Column(name = "updated_at")
+	    private LocalDateTime updatedAt;
 	    
 	    @Column(unique = true)
 	    private String email;
@@ -77,6 +94,18 @@ public class AdminDetails {
 		}
 		public void setRole(String role) {
 			this.role = role;
+		}
+		public LocalDateTime getCreatedAt() {
+			return createdAt;
+		}
+		public void setCreatedAt(LocalDateTime createdAt) {
+			this.createdAt = createdAt;
+		}
+		public LocalDateTime getUpdatedAt() {
+			return updatedAt;
+		}
+		public void setUpdatedAt(LocalDateTime updatedAt) {
+			this.updatedAt = updatedAt;
 		}
 
 }

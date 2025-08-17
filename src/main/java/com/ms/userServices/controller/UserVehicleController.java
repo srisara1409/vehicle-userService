@@ -51,10 +51,14 @@ public class UserVehicleController {
 	}
 
 	@GetMapping("/getUser/{id}")
-	public Optional<UserInfo> getUserById(@PathVariable("id") Long id) {
+	public List<UserVehicleInfo> getUserById(@PathVariable("id") Long id) {
 		return vehicleService.getUserById(id);
 	}
-
+	@GetMapping("/getUserWithoutVehicleById/{id}")
+	public Optional<UserInfo> getUserWithoutVehicleById(@PathVariable("id") Long id) {
+		return vehicleService.getUserWithoutVehicleById(id);
+	}
+	
 	@PostMapping("/approve/{userId}")
 	public ResponseEntity<String> addVehicle(@PathVariable("userId") Long userId, @RequestBody VehicleRequest vehicleRequest) {
 		boolean added = vehicleService.saveVehicleToUser(userId, vehicleRequest);
@@ -79,7 +83,7 @@ public class UserVehicleController {
 		} catch (IllegalStateException e) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage()); // Duplicate reg number
 		} catch (Exception e) {
-			e.printStackTrace(); 
+			//e.printStackTrace(); 
 			return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body("Not able to modified the record, Please check the updated field.");
 		}
 	}
@@ -134,41 +138,47 @@ public class UserVehicleController {
 	}
 
 	
-	@GetMapping("/updateUserClosed/{userId}")
-	public ResponseEntity<String> updateUserStatusIfAllVehiclesEnded(@PathVariable("userId") Long userId) {
-		Optional<UserInfo> optionalUser = userRepository.findById(userId);
-
-		if (!optionalUser.isPresent()) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-		}
-
-		UserInfo user = optionalUser.get();
-		List<UserVehicleInfo> vehicles = user.getVehicles();
-
-		LocalDate today = LocalDate.now();
-
-		boolean hasActiveVehicle = vehicles.stream()
-				.anyMatch(vehicle -> {
-					LocalDate endDate = parseDate(vehicle.getBondEndDate());
-					return endDate != null && !endDate.isBefore(today);
-				});
-
-		if (!hasActiveVehicle) {
-			user.setStatus("CLOSED");
-			userRepository.save(user);
-			return ResponseEntity.ok("User status updated to CLOSED");
-		}
-
-		return ResponseEntity.ok("User has active vehicle(s); status not updated");
-	}
-
-	private LocalDate parseDate(String dateStr) {
-		try {
-			return LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-		} catch (Exception e) {
-			return null;
-		}
-	}
+	//  @GetMapping("/updateUserClosed")
+	//	public ResponseEntity<String> updateUserStatusIfAllVehiclesEnded() {
+	//		Optional<UserInfo> optionalUser = userRepository.findAllUserSummaries();
+	//
+	//		if (!optionalUser.isPresent()) {
+	//			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+	//		}
+	//
+	//		UserInfo user = optionalUser.get();
+	//		List<UserVehicleInfo> vehicles = user.getVehicles();
+	//
+	//		LocalDate today = LocalDate.now();
+	//
+	//		boolean hasActiveVehicle = vehicles.stream()
+	//				.anyMatch(vehicle -> {
+	//					LocalDate endDate = parseDate(vehicle.getBondEndDate());
+	//					return endDate != null && !endDate.isBefore(today);
+	//				});
+	//
+	//		if (!hasActiveVehicle) {
+	//			user.setStatus("CLOSED");
+	//			userRepository.save(user);
+	//			return ResponseEntity.ok("User status updated to CLOSED");
+	//		}
+	//
+	//		return ResponseEntity.ok("User has active vehicle(s); status not updated");
+	//	}
+	//
+	//	private LocalDate parseDate(String dateStr) {
+	//		try {
+	//			return LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+	//		} catch (Exception e) {
+	//			return null;
+	//		}
+	//	}
+	
+    @PostMapping("/close-eligible")
+    public ResponseEntity<String> closeEligibleUsers() {
+        int updated = vehicleService.closeApprovedUsersWithoutActiveVehiclesEndedByNow();
+        return ResponseEntity.ok("Users closed: " + updated);
+    }
 
 
 }

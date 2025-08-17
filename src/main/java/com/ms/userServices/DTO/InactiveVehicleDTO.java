@@ -1,5 +1,7 @@
 package com.ms.userServices.DTO;
 
+import java.time.LocalDateTime;
+
 public interface InactiveVehicleDTO {
     Long getUserVehicleId();
     String getRegistrationNumber();
@@ -11,4 +13,5 @@ public interface InactiveVehicleDTO {
     String getFuelType();
     String getVehicleStatus();
     String getNote();
+    LocalDateTime getUpdatedAt();
 }

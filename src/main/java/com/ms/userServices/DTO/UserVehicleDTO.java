@@ -1,5 +1,7 @@
 package com.ms.userServices.DTO;
 
+import java.time.LocalDateTime;
+
 public class UserVehicleDTO {
     private Long userId;
     private Long userVehicleId;
@@ -9,8 +11,9 @@ public class UserVehicleDTO {
     private Integer vehicleYear;
     private String bondStartDate;
     private String bondEndDate;
+    private LocalDateTime updatedAt;
 
-    public UserVehicleDTO(Long userId, Long userVehicleId, String registrationNumber, String vehicleMake, String vehicleModel, Integer vehicleYear, String bondStartDate, String bondEndDate) {
+    public UserVehicleDTO(Long userId, Long userVehicleId, String registrationNumber, String vehicleMake, String vehicleModel, Integer vehicleYear, String bondStartDate, String bondEndDate, LocalDateTime updatedAt) {
         this.userId = userId;
         this.userVehicleId = userVehicleId;
         this.registrationNumber = registrationNumber;
@@ -19,6 +22,7 @@ public class UserVehicleDTO {
         this.vehicleYear = vehicleYear;
         this.bondStartDate = bondStartDate;
         this.bondEndDate = bondEndDate;
+        this.updatedAt = updatedAt;
     }
 
 	public Long getUserId() {
@@ -84,4 +88,13 @@ public class UserVehicleDTO {
 	public void setBondEndDate (String bondEndDate) {
 		this.bondEndDate = bondEndDate;
 	}
+
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(LocalDateTime updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+	
 }

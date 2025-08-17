@@ -17,7 +17,11 @@ import com.ms.userServices.model.VehicleRequest;
 import com.ms.userServices.repository.UserLoginRepository;
 import com.ms.userServices.repository.UserVehicleInfoRepository;
 
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class UserVehicleService {
 
 	@Autowired
@@ -54,7 +58,7 @@ public class UserVehicleService {
         return users;
     }
 
-	public Optional<UserInfo> getUserById(Long id) {
+	public Optional<UserInfo> getUserWithoutVehicleById(Long id) {
 	    Optional<UserInfo> userOpt = userRepo.findById(id);
 	    userOpt.ifPresent(user -> {
 	        List<UserVehicleInfo> activeVehicles = user.getVehicles().stream()
@@ -65,18 +69,19 @@ public class UserVehicleService {
 	    return userOpt;
 	}
 	
-//	public Optional<UserInfo> getUserById(Long id) {
-//	    Optional<UserInfo> userOpt = userInfoRepository.findById(id);
-//	    userOpt.ifPresent(user -> {
-//	        List<UserVehicleInfo> activeVehicles = Optional.ofNullable(user.getVehicles())
-//	            .orElse(Collections.emptyList())
-//	            .stream()
-//	            .filter(v -> "Active".equalsIgnoreCase(v.getVehicleStatus()))
-//	            .toList();
-//	        user.setVehicles(activeVehicles);
-//	    });
-//	    return userOpt;
-//	}
+	public List<UserVehicleInfo> getUserById(Long id) {
+	    return userRepo.findById(id)
+	        .map(user -> user.getVehicles().stream()
+	            .filter(v -> "Active".equalsIgnoreCase(v.getVehicleStatus()))
+	            .toList()
+	        )
+	        .orElse(List.of()); // return empty list if user not found
+	}
+	
+    @Transactional
+    public int closeApprovedUsersWithoutActiveVehiclesEndedByNow() {
+        return userRepo.closeEligibleApprovedUsers();
+    }
 
 	public boolean saveVehicleToUser(Long userId, VehicleRequest vehicleRequest) {
 		Optional<UserInfo> userOpt = userRepo.findById(userId);
@@ -113,10 +118,17 @@ public class UserVehicleService {
 		    }
 
 			// 🔒 Check for duplicate reg number (used by other user)
-			Optional<UserVehicleInfo> existingReg = userVehicleInfoRepository.findByRegistrationNumber(vehicleRequest.getRegistrationNumber());
-			if (existingReg.isPresent() && existingReg.get().getVehicleStatus().equalsIgnoreCase("Active") && !existingReg.get().getUser().getId().equals(userId)) {
-				throw new IllegalStateException("This registration number already exists for another user.");
-			}
+//			Optional<UserVehicleInfo> existingReg = userVehicleInfoRepository.findByRegistrationNumber(vehicleRequest.getRegistrationNumber());
+//			if (existingReg.isPresent() && existingReg.get().getVehicleStatus().equalsIgnoreCase("Active") && !existingReg.get().getUser().getId().equals(userId)) {
+//				throw new IllegalStateException("This registration number already exists for another user.");
+//			}
+		    
+		    String reg = vehicleRequest.getRegistrationNumber().trim();
+		    boolean makingActive = "active".equalsIgnoreCase(vehicleRequest.getVehicleStatus());
+
+		    if (makingActive && userVehicleInfoRepository.existsActiveByRegForOtherUser(reg, userId)) {
+		      throw new IllegalStateException("This registration number is already active for another user.");
+		    }
 
 			// ✅ If no matching vehicle ID, and status is Active, enforce limit
 			long activeVehicleCount = user.getVehicles().stream()
