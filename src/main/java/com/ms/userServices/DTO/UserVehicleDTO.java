@@ -9,17 +9,19 @@ public class UserVehicleDTO {
     private String vehicleMake;
     private String vehicleModel;
     private Integer vehicleYear;
+    private String vehicleStatus;
     private String bondStartDate;
     private String bondEndDate;
     private LocalDateTime updatedAt;
 
-    public UserVehicleDTO(Long userId, Long userVehicleId, String registrationNumber, String vehicleMake, String vehicleModel, Integer vehicleYear, String bondStartDate, String bondEndDate, LocalDateTime updatedAt) {
+    public UserVehicleDTO(Long userId, Long userVehicleId, String registrationNumber, String vehicleMake, String vehicleModel, Integer vehicleYear, String vehicleStatus, String bondStartDate, String bondEndDate, LocalDateTime updatedAt) {
         this.userId = userId;
         this.userVehicleId = userVehicleId;
         this.registrationNumber = registrationNumber;
         this.vehicleMake = vehicleMake;
         this.vehicleModel = vehicleModel;
         this.vehicleYear = vehicleYear;
+        this.vehicleStatus = vehicleStatus;
         this.bondStartDate = bondStartDate;
         this.bondEndDate = bondEndDate;
         this.updatedAt = updatedAt;
@@ -73,6 +75,14 @@ public class UserVehicleDTO {
 		this.vehicleYear = vehicleYear;
 	}
     
+	public String getVehicleStatus() {
+		return vehicleStatus;
+	}
+
+	public void setVehicleStatus(String vehicleStatus) {
+		this.vehicleStatus = vehicleStatus;
+	}
+
 	public String getBondStartDate () {
 		return bondStartDate;
 	}

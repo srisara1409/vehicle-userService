@@ -38,7 +38,7 @@ public interface UserVehicleInfoRepository extends JpaRepository<UserVehicleInfo
 
 	@Query("""
 		    SELECT new com.ms.userServices.DTO.UserVehicleDTO(
-		        v.user.id, v.userVehicleId, v.registrationNumber, v.vehicleMake, v.vehicleModel, v.vehicleYear, v.bondStartDate, v.bondEndDate, v.updatedAt
+		        v.user.id, v.userVehicleId, v.registrationNumber, v.vehicleMake, v.vehicleModel, v.vehicleYear, v.vehicleStatus, v.bondStartDate, v.bondEndDate, v.updatedAt
 		    )
 		    FROM UserVehicleInfo v
 		    WHERE v.user.id IN :userIds
