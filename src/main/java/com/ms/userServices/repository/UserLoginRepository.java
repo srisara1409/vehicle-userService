@@ -15,7 +15,8 @@ public interface UserLoginRepository extends JpaRepository<UserInfo, Long> {
 
 	@Query("""
 			    SELECT new com.ms.userServices.DTO.UserInfoDTO(
-			        u.id, u.firstName, u.lastName, u.dateOfBirth, u.mobileNumber, u.email, u.vehicleType , u.licenseNumber, u.status
+			        u.id, u.firstName, u.lastName, u.dateOfBirth, u.mobileNumber, u.email, u.vehicleType , u.licenseNumber, u.status, u.createdAt, 
+			        u.updatedAt
 			    )
 			    FROM UserInfo u
 			""")
@@ -25,7 +26,8 @@ public interface UserLoginRepository extends JpaRepository<UserInfo, Long> {
 	@Transactional
 	@Query(value = """
 	  UPDATE user_info u
-	  SET status = 'CLOSED'
+	  SET status = 'CLOSED',
+	  updated_at = now()
 	  WHERE u.status = 'APPROVED'
 	    AND EXISTS (SELECT 1 FROM user_vehicle_info v WHERE v.user_id = u.id)
 	    AND NOT EXISTS (SELECT 1 FROM user_vehicle_info v

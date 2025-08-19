@@ -8,6 +8,8 @@ public interface InactiveVehicleDTO {
     String getVehicleModel();
     String getVehicleMake();
     Integer getVehicleYear();
+    Integer getBondAmount();
+    Integer getBondWeeks();
     String getBondStartDate();
     String getBondEndDate();
     String getFuelType();

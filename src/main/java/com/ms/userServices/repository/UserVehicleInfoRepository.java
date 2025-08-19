@@ -28,7 +28,7 @@ public interface UserVehicleInfoRepository extends JpaRepository<UserVehicleInfo
 
 	@Query("SELECT v.userVehicleId AS userVehicleId, v.registrationNumber AS registrationNumber, " +
 		       "v.vehicleModel AS vehicleModel, v.vehicleMake AS vehicleMake, " +
-		       "v.vehicleYear AS vehicleYear, v.fuelType AS fuelType, " +
+		       "v.vehicleYear AS vehicleYear, v.fuelType AS fuelType, v.bondAmount AS bondAmount, v.bondWeeks AS bondWeeks, " +
 		       "v.bondStartDate AS bondStartDate, v.bondEndDate AS bondEndDate, " +
 		       "v.vehicleStatus AS vehicleStatus, v.updatedAt AS updatedAt, v.note AS note " +
 		       "FROM UserVehicleInfo v WHERE v.user.id = :userId AND v.vehicleStatus = 'InActive'")
