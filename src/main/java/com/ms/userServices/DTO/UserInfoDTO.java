@@ -1,6 +1,6 @@
 package com.ms.userServices.DTO;
 
-
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class UserInfoDTO {
@@ -13,10 +13,12 @@ public class UserInfoDTO {
     private String vehicleType;
     private String licenseNumber;
     private String status;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private List<UserVehicleDTO> vehicles;
 
     // JPQL projection constructor
-    public UserInfoDTO(Long id, String firstName, String lastName, String dateOfBirth, String mobileNumber, String email, String vehicleType, String licenseNumber, String status) {
+    public UserInfoDTO(Long id, String firstName, String lastName, String dateOfBirth, String mobileNumber, String email, String vehicleType, String licenseNumber, String status, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -26,11 +28,13 @@ public class UserInfoDTO {
         this.vehicleType = vehicleType;
         this.licenseNumber = licenseNumber;
         this.status = status;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     // Full constructor
-    public UserInfoDTO(Long id, String firstName, String lastName, String dateOfBirth, String mobileNumber, String email, String vehicleType, String licenseNumber, String status, List<UserVehicleDTO> vehicles) {
-        this(id, firstName, lastName, dateOfBirth, mobileNumber, email, vehicleType, licenseNumber, status);
+    public UserInfoDTO(Long id, String firstName, String lastName, String dateOfBirth, String mobileNumber, String email, String vehicleType, String licenseNumber, String status, LocalDateTime createdAt, LocalDateTime updatedAt, List<UserVehicleDTO> vehicles) {
+        this(id, firstName, lastName, dateOfBirth, mobileNumber, email, vehicleType, licenseNumber, status, createdAt, updatedAt);
         this.vehicles = vehicles;
     }
 
@@ -104,7 +108,23 @@ public class UserInfoDTO {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+	
+	public LocalDateTime getCreatedAt() { 
+		return createdAt; 
+	}
 
+	public void setCreatedAt(LocalDateTime createdAt) { 
+		this.createdAt = createdAt; 
+	}
+	
+    public LocalDateTime getUpdatedAt() { 
+    	return updatedAt; 
+    }
+    
+    public void setUpdatedAt(LocalDateTime updatedAt) { 
+    	this.updatedAt = updatedAt; 
+    }
+    
 	public List<UserVehicleDTO> getVehicles() {
 		return vehicles;
 	}
