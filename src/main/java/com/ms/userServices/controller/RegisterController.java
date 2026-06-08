@@ -1,6 +1,8 @@
 package com.ms.userServices.controller;
 
 import java.io.IOException;
+import java.util.List;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
@@ -90,8 +92,10 @@ public class RegisterController {
 		byte[] pdf = registerService.generateBankDetailsPdf(
 		        user.getAccountName(), user.getBsbNumber(), user.getAccountNumber(),user.getBankName(), 
 		        user.getSignature());
+		byte[] termsAndCondionsFile = registerService.generateTermsAndConditionsPdf(user.getSignature());
 		user.setStatus("PENDING");
 		user.setBankDetailsPdf(pdf);
+		user.setTermsAndConditionsFile(termsAndCondionsFile);
 		userRepo.save(user);
 		return ResponseEntity.ok()
 	            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=BankDetails.pdf")
@@ -103,6 +107,32 @@ public class RegisterController {
 		}
 	}
 	
+	@GetMapping("/terms-and-conditions/generate-missing")
+	public ResponseEntity<String> generateTermsForMissingUsers() throws Exception {
+
+	    List<Long> users = userRepo.findUserIdsWithoutTermsPdf();
+
+	    if (users.isEmpty()) {
+	        return ResponseEntity.ok("All users already have Terms & Conditions PDF.");
+	    }
+
+	    int successCount = 0;
+
+	    for (Long userId : users) {
+            UserInfo user = userRepo.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found for id: " + userId));
+
+            byte[] pdf = registerService.generateTermsAndConditionsPdf(user.getSignature());
+
+            if (pdf != null && pdf.length > 0) {
+                user.setTermsAndConditionsFile(pdf);
+                userRepo.save(user);
+                successCount++;
+            }
+        }
+
+	    return ResponseEntity.ok(successCount + " users updated with Terms & Conditions PDF.");
+	}
 
 	@GetMapping("/file/{id}/{type}")
 	public ResponseEntity<byte[]> getFile(
@@ -135,6 +165,10 @@ public class RegisterController {
 		case "signature":
 			fileData = user.getSignature();
 			filename = "signature_image.pdf";
+			break;
+		case "termsandconditions":
+			fileData = user.getTermsAndConditionsFile();
+			filename = "agreement_bond.pdf";
 			break;
 		default:
 			throw new IllegalArgumentException("Invalid file type: " + type);

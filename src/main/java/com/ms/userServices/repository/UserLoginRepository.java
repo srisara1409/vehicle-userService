@@ -1,6 +1,7 @@
 package com.ms.userServices.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -38,6 +39,8 @@ public interface UserLoginRepository extends JpaRepository<UserInfo, Long> {
 	                    WHERE v.user_id = u.id AND parse_end_ts(v.bond_end_date) > now())
 	  """, nativeQuery = true)
 	int closeEligibleApprovedUsers();
-
-
+	
+	@Query("SELECT u.id FROM UserInfo u WHERE u.termsAndConditionsFile IS NULL")
+	List<Long> findUserIdsWithoutTermsPdf();
+	
 }

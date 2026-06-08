@@ -86,6 +86,10 @@ public class UserInfo {
 	@JsonIgnore
 	private byte[] bankDetailsPdf;
 	
+	@Lob
+	@JsonIgnore
+	private byte[] termsAndConditionsFile;
+	
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -136,6 +140,12 @@ public class UserInfo {
 	}
 	public Long getId() {
 		return id;
+	}
+	public byte[] getTermsAndConditionsFile() {
+		return termsAndConditionsFile;
+	}
+	public void setTermsAndConditionsFile(byte[] termsAndConditionsFile) {
+		this.termsAndConditionsFile = termsAndConditionsFile;
 	}
 	public void setId(Long id) {
 		this.id = id;
